@@ -1,0 +1,151 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WAV Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: thin dashed black;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        main {
+            width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        figure {
+            width:100%;
+            margin: 0;
+            text-align: center;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        audio {
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        ul {
+            display: flex;
+            justify-content: space-between;
+            list-style: none;
+            padding: 0;
+        }
+
+        .wrapper, figure {
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .wrapper, label {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        img {
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <form method="post" enctype="multipart/form-data" class="wrapper">
+         <input type="hidden" name="id" value="{{ id }}">
+        <label>
+            Select WAV File:
+            <input type="file" name="file" accept=".wav" required>
+        </label>
+        <button type="submit">Upload</button>
+    </form>
+
+
+    {% if id %}
+    <form method="post" action="{{ url_for('analyze') }}" class="wrapper">
+        <input type="hidden" name="id" value="{{ id }}">
+        <label>
+            Start Time (s):
+            <input type="number" step="0.001" name="start" required>
+        </label>
+        <label>
+            Duration (s):
+            <input type="number" step="0.001" name="duration" required>
+        </label>
+        <label>
+            Window:
+            <select name="window">
+                <option value="hann">Hanning</option>
+                <option value="hamming">Hamming</option>
+            </select>
+        </label>
+        <button type="submit">Analyze</button>
+    </form>
+
+
+    <figure class="graph">
+        <img src="{{ url_for('static', filename=plot) }}" alt="Time Diagram" width="599">
+        <figcaption>Time Domain of Uploaded Audio</figcaption>
+    </figure>
+
+    {% if segment_plot and spectrum_plot %}
+    <figure class="graph">
+        <img src="{{ url_for('static', filename=segment_plot) }}" alt="Segment Time" width="600">
+        <figcaption>Selected Segment Time Domain</figcaption>
+    </figure>
+    <figure class="graph">
+        <img src="{{ url_for('static', filename=spectrum_plot) }}" alt="Spectrum" width="600">
+        <figcaption>Spectrum of Selected Segment</figcaption>
+    </figure>
+    {% endif %}
+    {% endif %}
+</main>
+</body>
+</html>
